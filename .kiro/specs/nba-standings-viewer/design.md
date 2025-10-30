@@ -426,10 +426,11 @@ public class GlobalExceptionHandler {
 }
 ```
 
-**Retry Logic:**
-- NBA API calls will retry up to 3 times with exponential backoff
-- Retry delays: 1s, 2s, 4s
-- After 3 failures, throw NBAApiException
+**Rate Limiting Strategy:**
+- NBA API free tier limits requests to 5 per minute
+- NO retry logic implemented to minimize API requests
+- Failed requests throw NBAApiException immediately
+- Rely on database caching to reduce API calls
 
 ### Frontend Error Handling
 
@@ -616,9 +617,11 @@ SERVER_PORT=8080
 - Composite index on (snapshot_date, team_id) for standings queries
 
 **API Rate Limiting:**
-- Respect NBA API rate limits
-- Implement request throttling if needed
+- NBA API free tier: 5 requests per minute
+- NO retry logic to avoid hitting rate limits
+- Aggressive database caching to minimize API calls
 - Cache team data (rarely changes)
+- Fail fast on API errors rather than retry
 
 **Frontend Optimization:**
 - Lazy load standings tables

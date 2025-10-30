@@ -40,8 +40,7 @@ The NBA Standings Viewer is a web application that allows users to view NBA leag
 2. WHEN the Backend API fetches game data, THE Database SHALL store game results including date, teams, scores, and outcomes
 3. WHEN the Backend API fetches game data, THE Database SHALL store pre-calculated standings for each date from the season start up to the requested date
 4. WHEN the user requests a date for which standings are already cached in the Database, THE Backend API SHALL return the cached standings without fetching from the NBA Data Service
-5. WHEN the Backend API encounters an error fetching data from the NBA Data Service, THEN THE Backend API SHALL log the error and retry the request up to three times
-6. THE Backend API SHALL fetch team information from the NBA Data Service including team names, divisions, and conferences
+5. THE Backend API SHALL fetch team information from the NBA Data Service including team names, divisions, and conferences
 
 ### Requirement 3
 

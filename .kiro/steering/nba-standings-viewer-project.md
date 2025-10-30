@@ -71,7 +71,7 @@ src/
 **Service Layer:**
 - Keep services focused and single-purpose
 - Use @Transactional for data modifications
-- Implement retry logic for NBA API (3 attempts, exponential backoff)
+- NO retry logic for NBA API calls (to respect rate limits)
 
 **Repository Layer:**
 - Extend JpaRepository<Entity, ID>
@@ -120,8 +120,10 @@ src/
 
 **NBA API Guidelines:**
 - Use WebClient for non-blocking calls
-- Implement retry logic (3 attempts: 1s, 2s, 4s backoff)
-- Handle rate limiting gracefully
+- **CRITICAL: NO retry logic** - Free tier limits to 5 requests/minute
+- Fail fast on API errors to avoid rate limit violations
+- Rely on aggressive database caching to minimize API calls
+- Handle rate limiting gracefully with user-friendly error messages
 - Map external team IDs to internal entities
 
 ## Testing
