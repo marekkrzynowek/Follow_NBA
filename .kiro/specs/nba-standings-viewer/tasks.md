@@ -66,7 +66,7 @@
     - Add query methods: findByGameDateBetween, findByGameDateLessThanEqual, existsByNbaGameId
     - _Requirements: 2.2, 2.5_
   
-  - [ ] 4.3 Create StandingsSnapshotRepository interface
+  - [x] 4.3 Create StandingsSnapshotRepository interface
     - Extend JpaRepository for StandingsSnapshot entity
     - Add query methods: findBySnapshotDate, existsBySnapshotDate, findBySnapshotDateAndTeam_Division, findBySnapshotDateAndTeam_Conference
     - _Requirements: 2.3, 2.4_
