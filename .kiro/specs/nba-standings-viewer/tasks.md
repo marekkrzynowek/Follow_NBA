@@ -1,6 +1,6 @@
 # Implementation Plan
 
-- [ ] 1. Set up project structure and configuration
+- [x] 1. Set up project structure and configuration
   - [x] 1.1 Initialize Spring Boot project with Gradle and Java 21
     - Create Spring Boot project structure with Gradle build configuration
     - Configure build.gradle with dependencies: Spring Boot 3.x, Spring Data JPA, PostgreSQL driver, Flyway, WebClient
@@ -25,7 +25,7 @@
     - Create Division enum with all six NBA divisions
     - _Requirements: 4.1, 4.2_
   
-  - [ ] 2.2 Implement Team entity
+  - [x] 2.2 Implement Team entity
     - Create Team entity with id, nbaTeamId, teamName, abbreviation, division, conference
     - Use @Enumerated annotation for division and conference fields
     - Add appropriate JPA annotations and constraints
