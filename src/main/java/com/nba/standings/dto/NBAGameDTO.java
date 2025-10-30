@@ -8,6 +8,8 @@ import java.time.LocalDate;
  */
 public class NBAGameDTO {
     
+    public static final String STATUS_FINAL = "Final";
+    
     private Long id;
     
     private LocalDate date;
@@ -85,5 +87,14 @@ public class NBAGameDTO {
     
     public void setStatus(String status) {
         this.status = status;
+    }
+    
+    /**
+     * Checks if the game has finished (status is "Final").
+     * 
+     * @return true if the game is final, false otherwise
+     */
+    public boolean isFinal() {
+        return STATUS_FINAL.equals(status);
     }
 }
