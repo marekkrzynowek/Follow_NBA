@@ -1,0 +1,4 @@
+# This file ensures the db/migration directory is tracked in git
+# Flyway migration files will be placed in this directory
+# Naming convention: V{version}__{description}.sql
+# Example: V1__create_tables.sql, V2__seed_nba_teams.sql

@@ -14,7 +14,7 @@
     - Add health check configuration
     - _Requirements: 5.1_
   
-  - [-] 1.3 Set up Flyway migration structure
+  - [x] 1.3 Set up Flyway migration structure
     - Create db/migration directory structure
     - Configure Flyway in application.properties
     - _Requirements: 2.3_
