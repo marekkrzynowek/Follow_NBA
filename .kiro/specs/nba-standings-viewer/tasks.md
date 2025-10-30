@@ -20,7 +20,7 @@
     - _Requirements: 2.3_
 
 - [ ] 2. Create domain models and enums
-  - [ ] 2.1 Implement Conference and Division enums
+  - [x] 2.1 Implement Conference and Division enums
     - Create Conference enum with EASTERN and WESTERN values
     - Create Division enum with all six NBA divisions
     - _Requirements: 4.1, 4.2_
