@@ -44,7 +44,7 @@
     - Add appropriate indexes
     - _Requirements: 2.3_
 
-- [ ] 3. Create database migrations
+- [x] 3. Create database migrations
   - [x] 3.1 Create V1__create_tables.sql migration
     - Write SQL to create teams, games, and standings_snapshots tables
     - Include all indexes and constraints from design
@@ -56,12 +56,12 @@
     - _Requirements: 2.2_
 
 - [ ] 4. Implement repository layer
-  - [ ] 4.1 Create TeamRepository interface
+  - [x] 4.1 Create TeamRepository interface
     - Extend JpaRepository for Team entity
     - Add query methods: findByDivision, findByConference, findByNbaTeamId
     - _Requirements: 2.2_
   
-  - [ ] 4.2 Create GameRepository interface
+  - [x] 4.2 Create GameRepository interface
     - Extend JpaRepository for Game entity
     - Add query methods: findByGameDateBetween, findByGameDateLessThanEqual, existsByNbaGameId
     - _Requirements: 2.2, 2.5_
@@ -72,7 +72,8 @@
     - _Requirements: 2.3, 2.4_
 
 - [ ] 5. Implement NBA API integration
-  - [ ] 5.1 Create NBA API client configuration
+  - [ ] 5.1 Create NBA API client configuration and DTOs
+    - Create DTO classes for NBA API responses (game data, team data)
     - Configure WebClient bean for NBA API calls
     - Set up base URL and headers from application.properties
     - Implement retry logic with exponential backoff (3 attempts)
@@ -90,21 +91,27 @@
     - Implement method to calculate win-loss records from games
     - Implement method to compute winning percentages
     - Implement method to calculate games behind leader
-    - Implement method to sort teams by standings rules (win percentage, then head-to-head)
+    - Implement method to sort teams by standings rules (win percentage descending)
     - Implement method to assign ranks within groups
-    - _Requirements: 1.3, 4.3, 4.4_
+    - _Requirements: 1.3, 3.3, 3.4, 3.5_
   
   - [ ] 6.2 Implement grouping logic
     - Implement method to group teams by division
     - Implement method to group teams by conference
-    - _Requirements: 4.1, 4.2_
+    - _Requirements: 3.1, 3.2_
 
 - [ ] 7. Implement core business logic
-  - [ ] 7.1 Create StandingsService
+  - [ ] 7.1 Create custom exception classes
+    - Create InvalidDateException for date validation failures
+    - Create InvalidGroupByException for groupBy parameter validation failures
+    - Create NBAApiException for NBA API communication failures
+    - _Requirements: 1.5, 2.4_
+  
+  - [ ] 7.2 Create StandingsService
     - Implement method to check if standings exist in cache for a date
     - Implement method to fetch and store games from NBA API
     - Implement method to calculate and cache standings for date range
-    - Implement method to retrieve cached standings
+    - Implement method to retrieve cached standings grouped by division or conference
     - Coordinate between NBADataService, StandingsCalculator, and repositories
     - Handle transaction management
     - _Requirements: 1.2, 1.3, 2.1, 2.2, 2.3, 2.4_
@@ -131,45 +138,39 @@
     - Log errors appropriately
     - _Requirements: 1.5, 2.4_
 
-- [ ] 9. Add health check and monitoring
-  - [ ] 9.1 Configure Spring Boot Actuator
-    - Add actuator dependency to build.gradle
-    - Configure /actuator/health endpoint
-    - Add database health indicator
-    - _Requirements: 5.1_
-
-- [ ] 10. Initialize React frontend with TypeScript
-  - [ ] 10.1 Create React project with Vite and TypeScript
-    - Initialize Vite project with React and TypeScript template
+- [ ] 9. Initialize React frontend with TypeScript
+  - [ ] 9.1 Create React project with Vite and TypeScript
+    - Initialize Vite project with React and TypeScript template in frontend directory
     - Configure tsconfig.json for strict type checking
     - Set up project structure (components, services, types directories)
+    - Update docker-compose to include frontend service
     - _Requirements: 1.1, 1.4_
   
-  - [ ] 10.2 Set up Tailwind CSS and shadcn/ui
+  - [ ] 9.2 Set up Tailwind CSS and shadcn/ui
     - Install and configure Tailwind CSS
     - Initialize shadcn/ui with Radix UI components
     - Configure theme and styling
     - _Requirements: 1.4_
   
-  - [ ] 10.3 Install and configure Axios
+  - [ ] 9.3 Install and configure Axios
     - Install Axios for HTTP requests
     - Create API client configuration with base URL
     - Set up TypeScript types for API responses
     - _Requirements: 1.2_
 
-- [ ] 11. Implement frontend components
-  - [ ] 11.1 Create TypeScript types for API data
+- [ ] 10. Implement frontend components
+  - [ ] 10.1 Create TypeScript types for API data
     - Define TeamStanding interface
     - Define StandingsResponse interface
     - Define ErrorResponse interface
     - _Requirements: 1.4_
   
-  - [ ] 11.2 Create API service layer
+  - [ ] 10.2 Create API service layer
     - Implement fetchStandings function that calls backend API
     - Handle API errors and return typed responses
     - _Requirements: 1.2_
   
-  - [ ] 11.3 Create DateSelector component
+  - [ ] 10.3 Create DateSelector component
     - Implement date input field using shadcn/ui components
     - Implement groupBy radio buttons (division/conference)
     - Implement submit button
@@ -177,21 +178,21 @@
     - Handle form submission
     - _Requirements: 1.1_
   
-  - [ ] 11.4 Create StandingsTable component
+  - [ ] 10.4 Create StandingsTable component
     - Create reusable table component using shadcn/ui Table
     - Display columns: Rank, Team, W, L, PCT, GB
     - Accept data and title as props
     - Style with Tailwind CSS
-    - _Requirements: 4.3, 4.4_
+    - _Requirements: 3.3, 3.4_
   
-  - [ ] 11.5 Create StandingsDisplay component
+  - [ ] 10.5 Create StandingsDisplay component
     - Render multiple StandingsTable components based on groupBy selection
     - Handle loading state with spinner
     - Handle error state with error message
     - Handle empty state (no data for date)
-    - _Requirements: 1.4, 4.1, 4.2_
+    - _Requirements: 1.4, 3.1, 3.2_
   
-  - [ ] 11.6 Create App component
+  - [ ] 10.6 Create App component
     - Manage application state (date, groupBy, standings data, loading, error)
     - Render DateSelector component
     - Render StandingsDisplay component conditionally
@@ -199,66 +200,62 @@
     - Initially show only DateSelector (no standings)
     - _Requirements: 1.1, 1.4_
 
-- [ ] 12. Configure CORS and integration
-  - [ ] 12.1 Configure CORS in Spring Boot
-    - Add CORS configuration to allow frontend origin
+- [ ] 11. Configure CORS and integration
+  - [ ] 11.1 Configure CORS in Spring Boot
+    - Add CORS configuration class to allow frontend origin
     - Configure allowed methods and headers
-    - _Requirements: 5.5_
+    - _Requirements: 4.5_
   
-  - [ ] 12.2 Update frontend API base URL
+  - [ ] 11.2 Update frontend API base URL
     - Configure environment-specific API URLs
     - Set up .env files for development and production
-    - _Requirements: 5.2_
+    - _Requirements: 4.2_
 
-- [ ] 13. Create deployment documentation
-  - [ ] 13.1 Write AWS deployment guide
+- [ ] 12. Create deployment documentation
+  - [ ] 12.1 Write AWS deployment guide
     - Document AWS RDS PostgreSQL setup
     - Document backend deployment to AWS ECS or Elastic Beanstalk with Docker
     - Document frontend deployment to S3 + CloudFront
     - Document environment variable configuration
     - Include security group and networking setup
-    - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5_
+    - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5_
   
-  - [ ] 13.2 Write local development setup guide
-    - Document Docker Compose setup steps
+  - [ ] 12.2 Update local development setup guide
+    - Document Docker Compose setup steps for both backend and frontend
     - Document how to run backend and frontend locally
     - Document environment variable configuration
-    - _Requirements: 5.1_
+    - _Requirements: 4.1_
 
-- [ ] 14. Build and verify application
-  - [ ] 14.1 Build Docker images
+- [ ] 13. Build and verify application
+  - [ ] 13.1 Verify Docker setup
     - Build backend Docker image
+    - Build frontend Docker image
     - Test Docker Compose setup locally
     - Verify database migrations run successfully
-    - _Requirements: 5.1_
+    - _Requirements: 4.1_
   
-  - [ ] 14.2 Build frontend for production
-    - Run Vite build command
-    - Verify static assets are generated correctly
-    - _Requirements: 5.2_
-  
-  - [ ] 14.3 End-to-end verification
+  - [ ] 13.2 End-to-end verification
     - Start application with Docker Compose
     - Test date selection and standings retrieval
     - Test both division and conference grouping
     - Test error cases (invalid date, invalid groupBy)
     - Verify caching behavior (second request for same date is faster)
-    - _Requirements: 1.1, 1.2, 1.3, 1.4, 2.3, 2.4, 4.1, 4.2_
+    - _Requirements: 1.1, 1.2, 1.3, 1.4, 2.3, 2.4, 3.1, 3.2_
 
-- [ ] 15. Optional enhancements
-  - [ ]* 15.1 Add comprehensive unit tests
+- [ ] 14. Optional enhancements
+  - [ ]* 14.1 Add comprehensive unit tests
     - Write unit tests for StandingsCalculator logic
     - Write unit tests for service layer methods
     - Write unit tests for repository query methods
     - _Requirements: All_
   
-  - [ ]* 15.2 Add integration tests
+  - [ ]* 14.2 Add integration tests
     - Write integration tests for REST endpoints with MockMvc
     - Write integration tests for database operations
     - Write integration tests for NBA API client with WireMock
     - _Requirements: All_
   
-  - [ ]* 15.3 Add frontend component tests
+  - [ ]* 14.3 Add frontend component tests
     - Write tests for DateSelector component
     - Write tests for StandingsDisplay component
     - Write tests for StandingsTable component
