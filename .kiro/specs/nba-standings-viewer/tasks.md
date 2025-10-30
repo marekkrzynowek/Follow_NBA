@@ -19,7 +19,7 @@
     - Configure Flyway in application.properties
     - _Requirements: 2.3_
 
-- [ ] 2. Create domain models and enums
+- [x] 2. Create domain models and enums
   - [x] 2.1 Implement Conference and Division enums
     - Create Conference enum with EASTERN and WESTERN values
     - Create Division enum with all six NBA divisions
@@ -31,7 +31,7 @@
     - Add appropriate JPA annotations and constraints
     - _Requirements: 2.2, 4.1, 4.2_
   
-  - [ ] 2.3 Implement Game entity
+  - [x] 2.3 Implement Game entity
     - Create Game entity with id, nbaGameId, gameDate, homeTeam, awayTeam, homeScore, awayScore
     - Set up ManyToOne relationships with Team entity
     - Add appropriate indexes for date and team queries
