@@ -37,7 +37,7 @@
     - Add appropriate indexes for date and team queries
     - _Requirements: 2.2, 2.5_
   
-  - [ ] 2.4 Implement StandingsSnapshot entity
+  - [x] 2.4 Implement StandingsSnapshot entity
     - Create StandingsSnapshot entity with id, snapshotDate, team, wins, losses, winPct, gamesBack, divisionRank, conferenceRank
     - Set up ManyToOne relationship with Team entity
     - Add unique constraint on (snapshotDate, team)

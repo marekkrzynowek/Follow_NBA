@@ -3,6 +3,7 @@ package com.nba.standings.model.entity;
 import jakarta.persistence.*;
 import org.hibernate.annotations.Immutable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * Entity representing an NBA game with final scores.
@@ -22,7 +23,7 @@ public class Game {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @Column(name = "nba_game_id", unique = true, nullable = false)
+    @Column(name = "nba_game_id", nullable = false, unique = true)
     private Long nbaGameId;
     
     @Column(name = "game_date", nullable = false)
@@ -41,6 +42,9 @@ public class Game {
     
     @Column(name = "away_score", nullable = false)
     private Integer awayScore;
+    
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
     
     // Constructors
     public Game() {
@@ -83,6 +87,10 @@ public class Game {
     
     public Integer getAwayScore() {
         return awayScore;
+    }
+    
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
     
     @Override

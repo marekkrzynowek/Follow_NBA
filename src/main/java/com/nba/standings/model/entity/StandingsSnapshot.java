@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.Immutable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * Entity representing a cached snapshot of team standings for a specific date.
@@ -58,6 +59,9 @@ public class StandingsSnapshot {
     @Column(name = "conference_rank", nullable = false)
     private Integer conferenceRank;
     
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+    
     // Constructors
     public StandingsSnapshot() {
     }
@@ -110,6 +114,10 @@ public class StandingsSnapshot {
     
     public Integer getConferenceRank() {
         return conferenceRank;
+    }
+    
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
     
     @Override

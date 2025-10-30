@@ -4,6 +4,7 @@ import com.nba.standings.model.enums.Conference;
 import com.nba.standings.model.enums.Division;
 import jakarta.persistence.*;
 import org.hibernate.annotations.Immutable;
+import java.time.LocalDateTime;
 
 /**
  * Entity representing an NBA team.
@@ -18,10 +19,10 @@ public class Team {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @Column(name = "nba_team_id", unique = true, nullable = false)
+    @Column(name = "nba_team_id", nullable = false, unique = true)
     private Integer nbaTeamId;
     
-    @Column(name = "team_name", unique = true, nullable = false, length = 100)
+    @Column(name = "team_name", nullable = false, unique = true, length = 100)
     private String teamName;
     
     @Column(nullable = false, unique = true, length = 3)
@@ -34,6 +35,9 @@ public class Team {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
     private Conference conference;
+    
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
     
     // Constructors
     public Team() {
@@ -70,6 +74,10 @@ public class Team {
     
     public Conference getConference() {
         return conference;
+    }
+    
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
     
     @Override
