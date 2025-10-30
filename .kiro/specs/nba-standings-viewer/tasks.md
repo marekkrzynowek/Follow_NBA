@@ -45,12 +45,12 @@
     - _Requirements: 2.3_
 
 - [ ] 3. Create database migrations
-  - [ ] 3.1 Create V1__create_tables.sql migration
+  - [x] 3.1 Create V1__create_tables.sql migration
     - Write SQL to create teams, games, and standings_snapshots tables
     - Include all indexes and constraints from design
     - _Requirements: 2.2, 2.3, 2.5_
   
-  - [ ] 3.2 Create V2__seed_nba_teams.sql migration
+  - [x] 3.2 Create V2__seed_nba_teams.sql migration
     - Write SQL to insert all 30 NBA teams with their divisions, conferences, and NBA API team IDs
     - Include team names, abbreviations, and proper enum values
     - _Requirements: 2.2_
@@ -244,3 +244,22 @@
     - Test error cases (invalid date, invalid groupBy)
     - Verify caching behavior (second request for same date is faster)
     - _Requirements: 1.1, 1.2, 1.3, 1.4, 2.3, 2.4, 4.1, 4.2_
+
+- [ ] 15. Optional enhancements
+  - [ ]* 15.1 Add comprehensive unit tests
+    - Write unit tests for StandingsCalculator logic
+    - Write unit tests for service layer methods
+    - Write unit tests for repository query methods
+    - _Requirements: All_
+  
+  - [ ]* 15.2 Add integration tests
+    - Write integration tests for REST endpoints with MockMvc
+    - Write integration tests for database operations
+    - Write integration tests for NBA API client with WireMock
+    - _Requirements: All_
+  
+  - [ ]* 15.3 Add frontend component tests
+    - Write tests for DateSelector component
+    - Write tests for StandingsDisplay component
+    - Write tests for StandingsTable component
+    - _Requirements: 1.1, 1.4_
