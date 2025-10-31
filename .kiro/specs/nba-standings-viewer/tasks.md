@@ -134,7 +134,7 @@
     - Place in com.nba.standings.controller package
     - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5_
   
-  - [ ] 8.2 Create GlobalExceptionHandler
+  - [x] 8.2 Create GlobalExceptionHandler
     - Use @RestControllerAdvice annotation
     - Implement @ExceptionHandler for InvalidDateException (return 400 Bad Request with ProblemDetail)
     - Implement @ExceptionHandler for MethodArgumentTypeMismatchException (return 400 Bad Request for invalid enum values)
