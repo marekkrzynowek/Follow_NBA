@@ -105,10 +105,10 @@
     - Note: InvalidGroupByException is not needed - Spring's enum validation handles groupBy parameter validation automatically
     - _Requirements: 1.5, 2.4_
   
-  - [ ] 7.2 Create DTOs for API responses
+  - [x] 7.2 Create DTOs for API responses
     - Create TeamStandingDTO with rank, teamName, wins, losses, winPct fields
     - Create StandingsResponseDTO with date, groupBy, and standings (Map<String, List<TeamStandingDTO>>)
-    - Create ErrorResponseDTO with error and message fields
+    - Note: ErrorResponseDTO is not needed - use Spring's ProblemDetail for RFC 7807 compliant error responses
     - Place in com.nba.standings.dto package
     - _Requirements: 1.4_
   
@@ -139,7 +139,8 @@
     - Implement @ExceptionHandler for InvalidDateException (return 400 Bad Request)
     - Implement @ExceptionHandler for MethodArgumentTypeMismatchException (return 400 Bad Request for invalid enum values)
     - Implement @ExceptionHandler for NBAApiException (return 500 Internal Server Error)
-    - Return ErrorResponseDTO with appropriate error messages
+    - Return Spring's ProblemDetail for RFC 7807 compliant error responses
+    - Include type, title, status, detail, and instance fields in error responses
     - Place in com.nba.standings.exception package
     - _Requirements: 1.5, 2.4_
   

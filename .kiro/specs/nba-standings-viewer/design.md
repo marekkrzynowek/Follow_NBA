@@ -204,24 +204,33 @@ GET /api/standings?date=2025-10-24&groupBy=conference
 **Response (Error - 400 Bad Request - Invalid Date):**
 ```json
 {
-  "error": "Invalid date",
-  "message": "Date must be within the current NBA season"
+  "type": "about:blank",
+  "title": "Bad Request",
+  "status": 400,
+  "detail": "Date must be within the current NBA season",
+  "instance": "/api/standings"
 }
 ```
 
 **Response (Error - 400 Bad Request - Invalid GroupBy):**
 ```json
 {
-  "error": "Invalid groupBy parameter",
-  "message": "groupBy must be either 'division' or 'conference'"
+  "type": "about:blank",
+  "title": "Bad Request",
+  "status": 400,
+  "detail": "groupBy must be either 'division' or 'conference'",
+  "instance": "/api/standings"
 }
 ```
 
 **Response (Error - 500 Internal Server Error):**
 ```json
 {
-  "error": "Data fetch failed",
-  "message": "Unable to retrieve NBA data from external service"
+  "type": "about:blank",
+  "title": "Internal Server Error",
+  "status": 500,
+  "detail": "Unable to retrieve NBA data from external service",
+  "instance": "/api/standings"
 }
 ```
 
@@ -401,6 +410,12 @@ public class StandingsSnapshot {
 
 ### Backend Error Handling
 
+**RFC 7807 Compliance:**
+- All error responses follow RFC 7807 (Problem Details for HTTP APIs) standard
+- Use Spring's `ProblemDetail` class for error responses
+- Include type, title, status, detail, and instance fields
+- Leverage Spring Boot 3.x built-in RFC 7807 support
+
 **Exception Hierarchy:**
 - `NBAApiException` - External API communication failures
 - `InvalidDateException` - Date validation failures
@@ -410,20 +425,27 @@ public class StandingsSnapshot {
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidDateException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidDate(InvalidDateException ex);
+    public ResponseEntity<ProblemDetail> handleInvalidDate(InvalidDateException ex);
     
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidEnum(MethodArgumentTypeMismatchException ex);
+    public ResponseEntity<ProblemDetail> handleInvalidEnum(MethodArgumentTypeMismatchException ex);
     
     @ExceptionHandler(NBAApiException.class)
-    public ResponseEntity<ErrorResponse> handleNBAApiError(NBAApiException ex);
+    public ResponseEntity<ProblemDetail> handleNBAApiError(NBAApiException ex);
     
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGenericError(Exception ex);
+    public ResponseEntity<ProblemDetail> handleGenericError(Exception ex);
 }
 ```
 
 **Note:** GroupBy parameter validation is handled automatically by Spring's enum binding. When an invalid value is provided, Spring throws `MethodArgumentTypeMismatchException`, which is caught by the global exception handler.
+
+**RFC 7807 Response Structure:**
+- `type`: URI reference identifying the problem type (defaults to "about:blank")
+- `title`: Short, human-readable summary of the problem type
+- `status`: HTTP status code
+- `detail`: Human-readable explanation specific to this occurrence
+- `instance`: URI reference identifying the specific occurrence
 
 **Rate Limiting Strategy:**
 - NBA API free tier limits requests to 5 per minute

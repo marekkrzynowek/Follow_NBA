@@ -203,13 +203,22 @@ src/
 2. If exists, return from cache
 3. If not: fetch games, calculate standings, cache, return
 
-**Error Response Format:**
+**Error Response Format (RFC 7807 Compliant):**
 ```json
 {
-  "error": "Error type",
-  "message": "User-friendly message"
+  "type": "about:blank",
+  "title": "Error Title",
+  "status": 400,
+  "detail": "User-friendly error message",
+  "instance": "/api/standings"
 }
 ```
+
+**Error Handling Standards:**
+- Use Spring's `ProblemDetail` class for all error responses
+- Follow RFC 7807 (Problem Details for HTTP APIs) standard
+- Include type, title, status, detail, and instance fields
+- Leverage Spring Boot 3.x built-in RFC 7807 support
 
 ## Reference Files
 
