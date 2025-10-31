@@ -69,6 +69,29 @@ public class StandingsSnapshot {
         this.conferenceRank = conferenceRank;
     }
     
+    // Static factory method
+    /**
+     * Creates a StandingsSnapshot from a TeamStanding calculation result.
+     * This factory method encapsulates the logic of converting calculated standings
+     * into a persistent snapshot entity.
+     * 
+     * @param snapshotDate the date of the snapshot
+     * @param standing the calculated team standing
+     * @return a new StandingsSnapshot instance
+     */
+    public static StandingsSnapshot fromTeamStanding(LocalDate snapshotDate, 
+                                                     com.nba.standings.service.StandingsCalculator.TeamStanding standing) {
+        return new StandingsSnapshot(
+                snapshotDate,
+                standing.getTeam(),
+                standing.getWins(),
+                standing.getLosses(),
+                standing.getWinPct(),
+                standing.getDivisionRank(),
+                standing.getConferenceRank()
+        );
+    }
+    
     // Getters only - this is a read-only entity
     public Long getId() {
         return id;

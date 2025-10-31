@@ -2,6 +2,7 @@ package com.nba.standings.repository;
 
 import com.nba.standings.model.entity.Game;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -38,4 +39,13 @@ public interface GameRepository extends JpaRepository<Game, Long> {
      * @return true if a game with this ID exists, false otherwise
      */
     boolean existsByNbaGameId(Long nbaGameId);
+    
+    /**
+     * Find the most recent game date in the database.
+     * Used to determine the starting point for fetching new games.
+     * 
+     * @return the most recent game date, or null if no games exist
+     */
+    @Query("SELECT MAX(g.gameDate) FROM Game g")
+    LocalDate findMostRecentGameDate();
 }

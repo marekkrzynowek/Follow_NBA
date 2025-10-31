@@ -44,6 +44,24 @@ public class StandingsCalculator {
             this.winPct = BigDecimal.ZERO;
         }
 
+        /**
+         * Creates a TeamStanding from a StandingsSnapshot entity.
+         * This factory method encapsulates the logic of converting a persisted snapshot
+         * back into a TeamStanding object for API responses.
+         * 
+         * @param snapshot the standings snapshot from the database
+         * @return a new TeamStanding instance populated with snapshot data
+         */
+        public static TeamStanding fromSnapshot(com.nba.standings.model.entity.StandingsSnapshot snapshot) {
+            TeamStanding standing = new TeamStanding(snapshot.getTeam());
+            standing.setWins(snapshot.getWins());
+            standing.setLosses(snapshot.getLosses());
+            standing.calculateWinPct();
+            standing.setDivisionRank(snapshot.getDivisionRank());
+            standing.setConferenceRank(snapshot.getConferenceRank());
+            return standing;
+        }
+
         // Getters
         public Team getTeam() {
             return team;
@@ -174,9 +192,9 @@ public class StandingsCalculator {
      * Group teams by division, sort them, and assign division ranks.
      * 
      * @param standings Map of all team standings
-     * @return Map of Division to sorted list of TeamStanding with ranks assigned
+     * Assign division ranks to each team in the standings map.
      */
-    public Map<Division, List<TeamStanding>> groupByDivision(Map<Long, TeamStanding> standings) {
+    public void assignDivisionRanks(Map<Long, TeamStanding> standings) {
         // Group teams by division
         Map<Division, List<TeamStanding>> divisionStandings = new HashMap<>();
         for (TeamStanding standing : standings.values()) {
@@ -191,17 +209,15 @@ public class StandingsCalculator {
                 divisionTeams.get(i).setDivisionRank(i + 1);
             }
         }
-
-        return divisionStandings;
     }
 
     /**
      * Group teams by conference, sort them, and assign conference ranks.
      * 
      * @param standings Map of all team standings
-     * @return Map of Conference to sorted list of TeamStanding with ranks assigned
+     * Assign conference ranks to each team in the standings map.
      */
-    public Map<Conference, List<TeamStanding>> groupByConference(Map<Long, TeamStanding> standings) {
+    public void assignConferenceRanks(Map<Long, TeamStanding> standings) {
         // Group teams by conference
         Map<Conference, List<TeamStanding>> conferenceStandings = new HashMap<>();
         for (TeamStanding standing : standings.values()) {
@@ -216,7 +232,5 @@ public class StandingsCalculator {
                 conferenceTeams.get(i).setConferenceRank(i + 1);
             }
         }
-
-        return conferenceStandings;
     }
 }

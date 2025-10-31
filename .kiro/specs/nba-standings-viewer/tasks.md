@@ -112,7 +112,7 @@
     - Place in com.nba.standings.dto package
     - _Requirements: 1.4_
   
-  - [ ] 7.3 Create StandingsService
+  - [-] 7.3 Create StandingsService
     - Implement getStandings(LocalDate date, String groupBy) method
     - Determine season start date (October 1st of the appropriate year based on requested date)
     - Check if standings exist in cache using StandingsSnapshotRepository.existsBySnapshotDate
