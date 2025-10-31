@@ -5,14 +5,14 @@
     - Create Spring Boot project structure with Gradle build configuration
     - Configure build.gradle with dependencies: Spring Boot 3.x, Spring Data JPA, PostgreSQL driver, Flyway, WebClient
     - Set up application.properties with database and NBA API configuration placeholders
-    - _Requirements: 5.3, 5.4_
+    - _Requirements: 4.4, 4.5_
   
   - [x] 1.2 Create Docker configuration for development environment
     - Write Dockerfile for Spring Boot backend with multi-stage build (Gradle build + Java 21 runtime)
     - Create docker-compose.yml with PostgreSQL service and backend service
     - Configure volume mounts and network settings
     - Add health check configuration
-    - _Requirements: 5.1_
+    - _Requirements: 4.1_
   
   - [x] 1.3 Set up Flyway migration structure
     - Create db/migration directory structure
@@ -23,13 +23,13 @@
   - [x] 2.1 Implement Conference and Division enums
     - Create Conference enum with EASTERN and WESTERN values
     - Create Division enum with all six NBA divisions
-    - _Requirements: 4.1, 4.2_
+    - _Requirements: 3.1, 3.2_
   
   - [x] 2.2 Implement Team entity
     - Create Team entity with id, nbaTeamId, teamName, abbreviation, division, conference
     - Use @Enumerated annotation for division and conference fields
     - Add appropriate JPA annotations and constraints
-    - _Requirements: 2.2, 4.1, 4.2_
+    - _Requirements: 2.2, 3.1, 3.2_
   
   - [x] 2.3 Implement Game entity
     - Create Game entity with id, nbaGameId, gameDate, homeTeam, awayTeam, homeScore, awayScore
@@ -87,7 +87,7 @@
     - Save games to database (skip duplicates using existsByNbaGameId)
     - _Requirements: 2.1, 2.4_
 
-- [ ] 6. Implement standings calculation logic
+- [x] 6. Implement standings calculation logic
   - [x] 6.1 Create StandingsCalculator service
     - Implement method to calculate win-loss records from games for all teams
     - Implement method to compute winning percentages: wins / (wins + losses)
@@ -99,10 +99,10 @@
     - _Requirements: 1.3, 3.1, 3.2, 3.3, 3.4, 3.5_
 
 - [ ] 7. Implement core business logic and REST API
-  - [ ] 7.1 Create custom exception classes
+  - [x] 7.1 Create custom exception classes
     - Create InvalidDateException for date validation failures (extends RuntimeException)
-    - Create InvalidGroupByException for groupBy parameter validation failures (extends RuntimeException)
     - Place in com.nba.standings.exception package
+    - Note: InvalidGroupByException is not needed - Spring's enum validation handles groupBy parameter validation automatically
     - _Requirements: 1.5, 2.4_
   
   - [ ] 7.2 Create DTOs for API responses
@@ -114,8 +114,9 @@
   
   - [ ] 7.3 Create StandingsService
     - Implement getStandings(LocalDate date, String groupBy) method
+    - Determine season start date (October 1st of the appropriate year based on requested date)
     - Check if standings exist in cache using StandingsSnapshotRepository.existsBySnapshotDate
-    - If not cached: determine season start date, fetch games via NBADataService, calculate standings via StandingsCalculator, save StandingsSnapshot entities
+    - If not cached: fetch games from season start to requested date via NBADataService, calculate standings via StandingsCalculator, save StandingsSnapshot entities for the requested date
     - If cached: retrieve from StandingsSnapshotRepository by date and grouping
     - Return standings grouped by division or conference based on groupBy parameter
     - Use @Transactional for data modifications
@@ -123,10 +124,10 @@
     - _Requirements: 1.2, 1.3, 2.1, 2.2, 2.3, 2.4_
   
   - [ ] 7.4 Create StandingsController
-    - Implement GET /api/standings endpoint with @RequestParam date and groupBy
+    - Implement GET /api/standings endpoint with @RequestParam date and groupBy (GroupBy enum type)
     - Use @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) for date parameter
     - Validate date parameter (must be within current season, throw InvalidDateException)
-    - Validate groupBy parameter (must be "division" or "conference", throw InvalidGroupByException)
+    - GroupBy parameter validation is handled automatically by Spring's enum binding
     - Call StandingsService.getStandings(date, groupBy)
     - Transform service response to StandingsResponseDTO
     - Return ResponseEntity<StandingsResponseDTO>
@@ -136,7 +137,7 @@
   - [ ] 7.5 Create GlobalExceptionHandler
     - Use @RestControllerAdvice annotation
     - Implement @ExceptionHandler for InvalidDateException (return 400 Bad Request)
-    - Implement @ExceptionHandler for InvalidGroupByException (return 400 Bad Request)
+    - Implement @ExceptionHandler for MethodArgumentTypeMismatchException (return 400 Bad Request for invalid enum values)
     - Implement @ExceptionHandler for NBAApiException (return 500 Internal Server Error)
     - Return ErrorResponseDTO with appropriate error messages
     - Place in com.nba.standings.exception package
@@ -246,40 +247,20 @@
     - Document environment variable configuration (.env.example)
     - _Requirements: 4.1_
 
-- [ ] 11. Build and verify application
-  - [ ] 11.1 Verify Docker setup
-    - Run `docker-compose build` to build all images
-    - Run `docker-compose up` to start all services
-    - Verify backend starts successfully on port 8080
-    - Verify frontend starts successfully on port 3000
-    - Verify database migrations run successfully (check logs)
-    - Verify teams are seeded (30 teams in database)
-    - _Requirements: 4.1_
-  
-  - [ ] 11.2 End-to-end verification
-    - Open browser to http://localhost:3000
-    - Test date selection and standings retrieval for a valid date
-    - Test division grouping (should show 6 division tables)
-    - Test conference grouping (should show 2 conference tables)
-    - Test error case: date before season start (should show error message)
-    - Test error case: invalid groupBy parameter via API directly (should return 400)
-    - Verify caching: request same date twice, check logs for API call only on first request
-    - _Requirements: 1.1, 1.2, 1.3, 1.4, 2.3, 2.4, 3.1, 3.2_
-
-- [ ] 12. Optional enhancements
-  - [ ]* 12.1 Add comprehensive unit tests
+- [ ]* 11. Optional enhancements
+  - [ ]* 11.1 Add comprehensive unit tests
     - Write unit tests for StandingsCalculator logic
     - Write unit tests for service layer methods
     - Write unit tests for repository query methods
     - _Requirements: All_
   
-  - [ ]* 12.2 Add integration tests
+  - [ ]* 11.2 Add integration tests
     - Write integration tests for REST endpoints with MockMvc
     - Write integration tests for database operations
     - Write integration tests for NBA API client with WireMock
     - _Requirements: All_
   
-  - [ ]* 12.3 Add frontend component tests
+  - [ ]* 11.3 Add frontend component tests
     - Write tests for DateSelector component
     - Write tests for StandingsDisplay component
     - Write tests for StandingsTable component

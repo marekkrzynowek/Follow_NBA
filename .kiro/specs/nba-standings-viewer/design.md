@@ -75,9 +75,10 @@ The application follows a three-tier architecture with clear separation between 
 **StandingsController**
 - Endpoint: `GET /api/standings?date={yyyy-MM-dd}&groupBy={division|conference}`
 - Accepts date parameter (required)
-- Accepts groupBy parameter (required): "division" or "conference"
+- Accepts groupBy parameter (required): GroupBy enum type (DIVISION or CONFERENCE)
 - Returns standings grouped by the specified grouping
 - Handles validation and error responses
+- Spring automatically validates enum parameters and returns 400 for invalid values
 
 ```java
 @RestController
@@ -86,7 +87,7 @@ public class StandingsController {
     @GetMapping
     public ResponseEntity<StandingsResponse> getStandings(
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
-        @RequestParam String groupBy
+        @RequestParam GroupBy groupBy
     );
 }
 ```
@@ -401,10 +402,8 @@ public class StandingsSnapshot {
 ### Backend Error Handling
 
 **Exception Hierarchy:**
-- `NBADataException` - Base exception for NBA data-related errors
-  - `NBAApiException` - External API communication failures
-  - `InvalidDateException` - Date validation failures
-  - `DataNotFoundException` - Requested data not available
+- `NBAApiException` - External API communication failures
+- `InvalidDateException` - Date validation failures
 
 **Global Exception Handler:**
 ```java
@@ -413,6 +412,9 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidDateException.class)
     public ResponseEntity<ErrorResponse> handleInvalidDate(InvalidDateException ex);
     
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidEnum(MethodArgumentTypeMismatchException ex);
+    
     @ExceptionHandler(NBAApiException.class)
     public ResponseEntity<ErrorResponse> handleNBAApiError(NBAApiException ex);
     
@@ -420,6 +422,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleGenericError(Exception ex);
 }
 ```
+
+**Note:** GroupBy parameter validation is handled automatically by Spring's enum binding. When an invalid value is provided, Spring throws `MethodArgumentTypeMismatchException`, which is caught by the global exception handler.
 
 **Rate Limiting Strategy:**
 - NBA API free tier limits requests to 5 per minute
