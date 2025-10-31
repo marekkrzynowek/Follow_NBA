@@ -162,8 +162,7 @@ curl "http://localhost:8080/api/standings?date=2025-10-24&groupBy=division"
         "teamName": "Boston Celtics",
         "wins": 3,
         "losses": 0,
-        "winPct": 1.000,
-        "gamesBack": 0.0
+        "winPct": 1.000
       }
     ],
     "Central": [...],
@@ -191,7 +190,6 @@ Stores game results
 ### Standings Snapshots Table
 Caches calculated standings
 - Wins, losses, win percentage
-- Games behind leader
 - Division and conference ranks
 
 ## 🧪 Testing
@@ -265,7 +263,6 @@ SPRING_PROFILES_ACTIVE=prod
 ### Standings Calculation
 
 - **Win Percentage**: `wins / (wins + losses)`
-- **Games Behind**: `((leader_wins - team_wins) + (team_losses - leader_losses)) / 2`
 - **Ranking**: Teams sorted by win percentage (descending)
 
 ### Caching Strategy

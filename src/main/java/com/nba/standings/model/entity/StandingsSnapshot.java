@@ -45,14 +45,6 @@ public class StandingsSnapshot {
     @Column(name = "win_pct", nullable = false, precision = 5, scale = 3)
     private BigDecimal winPct;
     
-    /**
-     * Games behind the conference leader.
-     * Used for conference standings display only (not used for division standings).
-     * Calculated as: ((leader_wins - team_wins) + (team_losses - leader_losses)) / 2
-     */
-    @Column(name = "games_back", nullable = false, precision = 4, scale = 1)
-    private BigDecimal gamesBack;
-    
     @Column(name = "division_rank", nullable = false)
     private Integer divisionRank;
     
@@ -67,14 +59,12 @@ public class StandingsSnapshot {
     }
     
     public StandingsSnapshot(LocalDate snapshotDate, Team team, Integer wins, Integer losses, 
-                            BigDecimal winPct, BigDecimal gamesBack, Integer divisionRank, 
-                            Integer conferenceRank) {
+                            BigDecimal winPct, Integer divisionRank, Integer conferenceRank) {
         this.snapshotDate = snapshotDate;
         this.team = team;
         this.wins = wins;
         this.losses = losses;
         this.winPct = winPct;
-        this.gamesBack = gamesBack;
         this.divisionRank = divisionRank;
         this.conferenceRank = conferenceRank;
     }
@@ -104,10 +94,6 @@ public class StandingsSnapshot {
         return winPct;
     }
     
-    public BigDecimal getGamesBack() {
-        return gamesBack;
-    }
-    
     public Integer getDivisionRank() {
         return divisionRank;
     }
@@ -129,7 +115,6 @@ public class StandingsSnapshot {
                 ", wins=" + wins +
                 ", losses=" + losses +
                 ", winPct=" + winPct +
-                ", gamesBack=" + gamesBack +
                 ", divisionRank=" + divisionRank +
                 ", conferenceRank=" + conferenceRank +
                 '}';

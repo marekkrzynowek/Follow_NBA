@@ -110,7 +110,6 @@ public class StandingsController {
 **StandingsCalculator**
 - Calculates win-loss records from game data
 - Computes winning percentages
-- Calculates games behind leader
 - Sorts teams by standings rules
 - Groups teams by division and conference
 
@@ -152,7 +151,7 @@ public class StandingsController {
 
 #### 4. StandingsTable Component
 - Reusable table component
-- Displays team standings with columns: Rank, Team, W, L, PCT, GB
+- Displays team standings with columns: Rank, Team, W, L, PCT
 - Accepts data and configuration as props
 
 ### API Contracts
@@ -171,7 +170,7 @@ GET /api/standings?date=2025-10-24&groupBy=division
   "groupBy": "division",
   "standings": {
     "Atlantic": [
-      {"rank": 1, "teamName": "Boston Celtics", "wins": 3, "losses": 0, "winPct": 1.000, "gamesBack": 0.0}
+      {"rank": 1, "teamName": "Boston Celtics", "wins": 3, "losses": 0, "winPct": 1.000}
     ],
     "Central": [...],
     "Southeast": [...],
@@ -194,7 +193,7 @@ GET /api/standings?date=2025-10-24&groupBy=conference
   "groupBy": "conference",
   "standings": {
     "Eastern": [
-      {"rank": 1, "teamName": "Boston Celtics", "wins": 3, "losses": 0, "winPct": 1.000, "gamesBack": 0.0}
+      {"rank": 1, "teamName": "Boston Celtics", "wins": 3, "losses": 0, "winPct": 1.000}
     ],
     "Western": [...]
   }
@@ -268,7 +267,6 @@ CREATE TABLE standings_snapshots (
     wins INTEGER NOT NULL,
     losses INTEGER NOT NULL,
     win_pct DECIMAL(5,3) NOT NULL,
-    games_back DECIMAL(4,1),
     division_rank INTEGER,
     conference_rank INTEGER,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -387,9 +385,6 @@ public class StandingsSnapshot {
     
     @Column(name = "win_pct", nullable = false, precision = 5, scale = 3)
     private BigDecimal winPct;
-    
-    @Column(name = "games_back", precision = 4, scale = 1)
-    private BigDecimal gamesBack;
     
     @Column(name = "division_rank")
     private Integer divisionRank;

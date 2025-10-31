@@ -34,7 +34,6 @@ CREATE TABLE standings_snapshots (
     wins INTEGER NOT NULL,
     losses INTEGER NOT NULL,
     win_pct DECIMAL(5,3) NOT NULL,
-    games_back DECIMAL(4,1),
     division_rank INTEGER,
     conference_rank INTEGER,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

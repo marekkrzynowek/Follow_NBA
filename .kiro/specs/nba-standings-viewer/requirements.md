@@ -51,7 +51,7 @@ The NBA Standings Viewer is a web application that allows users to view NBA leag
 1. THE Frontend Application SHALL display standings for all six NBA divisions (Atlantic, Central, Southeast, Northwest, Pacific, Southwest)
 2. THE Frontend Application SHALL display standings for both NBA conferences (Eastern Conference, Western Conference)
 3. WHEN displaying Division Standings, THE Frontend Application SHALL show team name, wins, losses, and winning percentage for each team
-4. WHEN displaying Conference Standings, THE Frontend Application SHALL show team name, wins, losses, winning percentage, and games behind the leader for each team
+4. WHEN displaying Conference Standings, THE Frontend Application SHALL show team name, wins, losses, and winning percentage for each team
 5. THE Frontend Application SHALL sort teams within each division and conference by winning percentage in descending order
 
 ### Requirement 4

@@ -195,9 +195,8 @@ src/
 1. Fetch games up to requested date
 2. Calculate wins/losses per team
 3. Compute win percentage: wins / (wins + losses)
-4. Calculate games behind: ((leader_wins - team_wins) + (team_losses - leader_losses)) / 2
-5. Sort by win percentage
-6. Assign ranks
+4. Sort by win percentage
+5. Assign ranks
 
 **Caching Strategy:**
 1. Check if standings exist for date
