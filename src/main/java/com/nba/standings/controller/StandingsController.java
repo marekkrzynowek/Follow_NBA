@@ -50,10 +50,17 @@ public class StandingsController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
             @RequestParam GroupBy groupBy) {
         
-        logger.info("Received request for standings: date={}, groupBy={}", date, groupBy);
+        logger.info("========== CONTROLLER: getStandings called ==========");
+        logger.info("CONTROLLER: Received date parameter: {}", date);
+        logger.info("CONTROLLER: Date class: {}", date.getClass().getName());
+        logger.info("CONTROLLER: Date toString: {}", date.toString());
+        logger.info("CONTROLLER: Date year: {}, month: {}, day: {}", date.getYear(), date.getMonthValue(), date.getDayOfMonth());
+        logger.info("CONTROLLER: Received groupBy parameter: {}", groupBy);
         
         // Validate date is within current season
+        logger.info("CONTROLLER: Validating date is within current season...");
         seasonDateUtility.validateDateWithinCurrentSeason(date);
+        logger.info("CONTROLLER: Date validation passed");
         
         // Get standings from service
         Map<String, List<TeamStanding>> standings = standingsService.getStandings(date, groupBy);

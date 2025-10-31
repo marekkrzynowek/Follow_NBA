@@ -44,12 +44,17 @@ services:
       # Application Configuration
       SPRING_PROFILES_ACTIVE: dev
       SERVER_PORT: 8080
+      LOGGING_LEVEL_COM_NBA_STANDINGS: DEBUG
+      
+      # Debug Configuration
+      JAVA_OPTS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
       
       # Actuator Configuration
       MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info
       MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS: always
     ports:
       - "8080:8080"
+      - "5005:5005"  # Debug port
     volumes:
       # Volume mount for hot reload during development
       - ./src:/app/src:ro

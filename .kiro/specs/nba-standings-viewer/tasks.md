@@ -256,7 +256,7 @@
     - Write unit tests for repository query methods
     - _Requirements: All_
   
-  - [ ]* 12.2 Add integration tests
+  - [x] 12.2 Add integration tests
     - Write integration tests for REST endpoints with MockMvc
     - Write integration tests for database operations
     - Write integration tests for NBA API client with WireMock

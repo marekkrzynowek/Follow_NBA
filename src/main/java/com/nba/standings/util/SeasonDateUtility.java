@@ -1,6 +1,8 @@
 package com.nba.standings.util;
 
 import com.nba.standings.exception.InvalidDateException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -12,6 +14,8 @@ import java.time.Month;
  */
 @Component
 public class SeasonDateUtility {
+    
+    private static final Logger logger = LoggerFactory.getLogger(SeasonDateUtility.class);
     
     /**
      * Determine the season start date based on a given date.
@@ -40,19 +44,26 @@ public class SeasonDateUtility {
      * @throws InvalidDateException if the date is before the current season start or in the future
      */
     public void validateDateWithinCurrentSeason(LocalDate date) {
+        logger.info("SEASON_UTIL: Validating date: {}", date);
         LocalDate today = LocalDate.now();
+        logger.info("SEASON_UTIL: Today's date: {}", today);
         
         // Date cannot be in the future
         if (date.isAfter(today)) {
+            logger.error("SEASON_UTIL: Date {} is after today {}", date, today);
             throw new InvalidDateException("Date cannot be in the future");
         }
+        logger.info("SEASON_UTIL: Date is not in the future - OK");
         
         // Determine the current season start date
         LocalDate seasonStart = determineSeasonStart(today);
+        logger.info("SEASON_UTIL: Current season start date: {}", seasonStart);
         
         // Date must be on or after the season start
         if (date.isBefore(seasonStart)) {
+            logger.error("SEASON_UTIL: Date {} is before season start {}", date, seasonStart);
             throw new InvalidDateException("Date must be within the current NBA season (on or after " + seasonStart + ")");
         }
+        logger.info("SEASON_UTIL: Date is within current season - OK");
     }
 }

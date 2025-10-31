@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.net.URI;
@@ -31,6 +32,30 @@ public class GlobalExceptionHandler {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
                 HttpStatus.BAD_REQUEST, 
                 ex.getMessage()
+        );
+        problemDetail.setTitle("Bad Request");
+        problemDetail.setInstance(getRequestUri(request));
+        
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail);
+    }
+
+    /**
+     * Handles MissingServletRequestParameterException when required parameters are missing.
+     * Returns 400 Bad Request with ProblemDetail.
+     */
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ProblemDetail> handleMissingParameter(
+            MissingServletRequestParameterException ex, 
+            WebRequest request) {
+        
+        String detail = String.format(
+                "Required parameter '%s' is missing",
+                ex.getParameterName()
+        );
+        
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.BAD_REQUEST, 
+                detail
         );
         problemDetail.setTitle("Bad Request");
         problemDetail.setInstance(getRequestUri(request));
