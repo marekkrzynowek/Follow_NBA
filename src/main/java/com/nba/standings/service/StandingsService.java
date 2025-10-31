@@ -10,13 +10,13 @@ import com.nba.standings.repository.GameRepository;
 import com.nba.standings.repository.StandingsSnapshotRepository;
 import com.nba.standings.repository.TeamRepository;
 import com.nba.standings.service.StandingsCalculator.TeamStanding;
+import com.nba.standings.util.SeasonDateUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.Month;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -37,17 +37,20 @@ public class StandingsService {
     private final TeamRepository teamRepository;
     private final NBADataService nbaDataService;
     private final StandingsCalculator standingsCalculator;
+    private final SeasonDateUtility seasonDateUtility;
     
     public StandingsService(StandingsSnapshotRepository standingsSnapshotRepository,
                            GameRepository gameRepository,
                            TeamRepository teamRepository,
                            NBADataService nbaDataService,
-                           StandingsCalculator standingsCalculator) {
+                           StandingsCalculator standingsCalculator,
+                           SeasonDateUtility seasonDateUtility) {
         this.standingsSnapshotRepository = standingsSnapshotRepository;
         this.gameRepository = gameRepository;
         this.teamRepository = teamRepository;
         this.nbaDataService = nbaDataService;
         this.standingsCalculator = standingsCalculator;
+        this.seasonDateUtility = seasonDateUtility;
     }
     
     /**
@@ -122,29 +125,10 @@ public class StandingsService {
             return mostRecentGameDate;
         } else {
             // No games in database - start from season start
-            LocalDate seasonStart = determineSeasonStart(requestedDate);
+            LocalDate seasonStart = seasonDateUtility.determineSeasonStart(requestedDate);
             logger.info("No games in database. Starting from season start: {}", seasonStart);
             return seasonStart;
         }
-    }
-    
-    /**
-     * Determine the season start date based on the requested date.
-     * NBA season starts on October 1st.
-     * If the requested date is before October, it belongs to the previous season.
-     * 
-     * @param date the requested date
-     * @return the season start date (October 1st of the appropriate year)
-     */
-    private LocalDate determineSeasonStart(LocalDate date) {
-        int year = date.getYear();
-        
-        // If the date is before October (months 1-9), the season started in the previous year
-        if (date.getMonth().getValue() < Month.OCTOBER.getValue()) {
-            year = year - 1;
-        }
-        
-        return LocalDate.of(year, Month.OCTOBER, 1);
     }
     
     /**

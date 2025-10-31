@@ -63,7 +63,7 @@
   
   - [x] 4.2 Create GameRepository interface
     - Extend JpaRepository for Game entity
-    - Add query methods: findByGameDateBetween, findByGameDateLessThanEqual, existsByNbaGameId
+    - Add query methods: findByGameDateBetween, findByGameDateLessThanEqual, existsByNbaGameId, findMostRecentGameDate
     - _Requirements: 2.2, 2.5_
   
   - [x] 4.3 Create StandingsSnapshotRepository interface
@@ -93,58 +93,59 @@
     - Implement method to compute winning percentages: wins / (wins + losses)
     - Implement method to sort teams by win percentage descending
     - Implement method to assign division ranks and conference ranks
-    - Implement method to group teams by division (returns Map<Division, List<TeamStanding>>)
-    - Implement method to group teams by conference (returns Map<Conference, List<TeamStanding>>)
     - Create internal TeamStanding class to hold calculated standings data
+    - Add fromSnapshot factory method to convert StandingsSnapshot to TeamStanding
     - _Requirements: 1.3, 3.1, 3.2, 3.3, 3.4, 3.5_
 
-- [ ] 7. Implement core business logic and REST API
+- [x] 7. Implement core business logic
   - [x] 7.1 Create custom exception classes
     - Create InvalidDateException for date validation failures (extends RuntimeException)
+    - Create NBAApiException for API communication failures
     - Place in com.nba.standings.exception package
-    - Note: InvalidGroupByException is not needed - Spring's enum validation handles groupBy parameter validation automatically
     - _Requirements: 1.5, 2.4_
   
   - [x] 7.2 Create DTOs for API responses
     - Create TeamStandingDTO with rank, teamName, wins, losses, winPct fields
     - Create StandingsResponseDTO with date, groupBy, and standings (Map<String, List<TeamStandingDTO>>)
-    - Note: ErrorResponseDTO is not needed - use Spring's ProblemDetail for RFC 7807 compliant error responses
+    - Add factory methods for type-safe division and conference grouping
     - Place in com.nba.standings.dto package
     - _Requirements: 1.4_
   
-  - [-] 7.3 Create StandingsService
-    - Implement getStandings(LocalDate date, String groupBy) method
+  - [x] 7.3 Create StandingsService
+    - Implement getStandings(LocalDate date, GroupBy groupBy) method
     - Determine season start date (October 1st of the appropriate year based on requested date)
+    - Optimize fetch start date (use most recent game date or season start)
     - Check if standings exist in cache using StandingsSnapshotRepository.existsBySnapshotDate
-    - If not cached: fetch games from season start to requested date via NBADataService, calculate standings via StandingsCalculator, save StandingsSnapshot entities for the requested date
+    - If not cached: fetch games via NBADataService, calculate standings via StandingsCalculator, save StandingsSnapshot entities
     - If cached: retrieve from StandingsSnapshotRepository by date and grouping
     - Return standings grouped by division or conference based on groupBy parameter
     - Use @Transactional for data modifications
-    - Coordinate between NBADataService, StandingsCalculator, and repositories
     - _Requirements: 1.2, 1.3, 2.1, 2.2, 2.3, 2.4_
-  
-  - [ ] 7.4 Create StandingsController
+
+- [ ] 8. Implement REST API layer
+  - [ ] 8.1 Create StandingsController
     - Implement GET /api/standings endpoint with @RequestParam date and groupBy (GroupBy enum type)
     - Use @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) for date parameter
     - Validate date parameter (must be within current season, throw InvalidDateException)
-    - GroupBy parameter validation is handled automatically by Spring's enum binding
     - Call StandingsService.getStandings(date, groupBy)
-    - Transform service response to StandingsResponseDTO
+    - Transform TeamStanding objects to TeamStandingDTO objects
+    - Build StandingsResponseDTO with date, groupBy, and transformed standings
     - Return ResponseEntity<StandingsResponseDTO>
     - Place in com.nba.standings.controller package
     - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5_
   
-  - [ ] 7.5 Create GlobalExceptionHandler
+  - [ ] 8.2 Create GlobalExceptionHandler
     - Use @RestControllerAdvice annotation
-    - Implement @ExceptionHandler for InvalidDateException (return 400 Bad Request)
+    - Implement @ExceptionHandler for InvalidDateException (return 400 Bad Request with ProblemDetail)
     - Implement @ExceptionHandler for MethodArgumentTypeMismatchException (return 400 Bad Request for invalid enum values)
-    - Implement @ExceptionHandler for NBAApiException (return 500 Internal Server Error)
-    - Return Spring's ProblemDetail for RFC 7807 compliant error responses
+    - Implement @ExceptionHandler for NBAApiException (return 500 Internal Server Error with ProblemDetail)
+    - Implement @ExceptionHandler for generic Exception (return 500 Internal Server Error)
+    - Use Spring's ProblemDetail for RFC 7807 compliant error responses
     - Include type, title, status, detail, and instance fields in error responses
     - Place in com.nba.standings.exception package
     - _Requirements: 1.5, 2.4_
   
-  - [ ] 7.6 Configure CORS for frontend integration
+  - [ ] 8.3 Configure CORS for frontend integration
     - Create com.nba.standings.config.CorsConfig class
     - Use @Configuration and implement WebMvcConfigurer
     - Override addCorsMappings to allow frontend origin (http://localhost:3000 for dev)
@@ -152,8 +153,8 @@
     - Allow all headers
     - _Requirements: 4.5_
 
-- [ ] 8. Initialize React frontend with TypeScript
-  - [ ] 8.1 Create React project with Vite and TypeScript
+- [ ] 9. Initialize React frontend with TypeScript
+  - [ ] 9.1 Create React project with Vite and TypeScript
     - Run `npm create vite@latest frontend -- --template react-ts` to initialize project
     - Configure tsconfig.json for strict type checking
     - Create directory structure: src/components, src/services, src/types, src/hooks
@@ -161,7 +162,7 @@
     - Configure volume mounts for hot reload
     - _Requirements: 1.1, 1.4_
   
-  - [ ] 8.2 Set up Tailwind CSS and shadcn/ui
+  - [ ] 9.2 Set up Tailwind CSS and shadcn/ui
     - Install Tailwind CSS: `npm install -D tailwindcss postcss autoprefixer`
     - Initialize Tailwind: `npx tailwindcss init -p`
     - Configure tailwind.config.js with content paths
@@ -170,29 +171,29 @@
     - Install required components: Table, Button, Input, Card
     - _Requirements: 1.4_
   
-  - [ ] 8.3 Install and configure Axios
+  - [ ] 9.3 Install and configure Axios
     - Install Axios: `npm install axios`
     - Create src/services/api.ts with Axios instance configured with base URL
     - Create .env file with VITE_API_BASE_URL=http://localhost:8080
     - Set up TypeScript types for API responses in src/types
     - _Requirements: 1.2, 4.2_
 
-- [ ] 9. Implement frontend components
-  - [ ] 9.1 Create TypeScript types for API data
+- [ ] 10. Implement frontend components
+  - [ ] 10.1 Create TypeScript types for API data
     - Create src/types/standings.ts
     - Define TeamStanding interface with rank, teamName, wins, losses, winPct
     - Define StandingsResponse interface with date, groupBy, standings (Record<string, TeamStanding[]>)
     - Define ErrorResponse interface with error and message
     - _Requirements: 1.4_
   
-  - [ ] 9.2 Create API service layer
+  - [ ] 10.2 Create API service layer
     - Create src/services/standingsService.ts
     - Implement fetchStandings(date: string, groupBy: string): Promise<StandingsResponse>
     - Use Axios instance from api.ts
     - Handle API errors and throw with error messages
     - _Requirements: 1.2_
   
-  - [ ] 9.3 Create DateSelector component
+  - [ ] 10.3 Create DateSelector component
     - Create src/components/DateSelector.tsx
     - Use shadcn/ui Input component for date input (type="date")
     - Use shadcn/ui RadioGroup for groupBy selection (division/conference)
@@ -201,7 +202,7 @@
     - Add basic date validation (not empty)
     - _Requirements: 1.1_
   
-  - [ ] 9.4 Create StandingsTable component
+  - [ ] 10.4 Create StandingsTable component
     - Create src/components/StandingsTable.tsx
     - Use shadcn/ui Table component
     - Display columns: Rank, Team, W, L, PCT
@@ -210,7 +211,7 @@
     - Style with Tailwind CSS
     - _Requirements: 3.3, 3.4_
   
-  - [ ] 9.5 Create StandingsDisplay component
+  - [ ] 10.5 Create StandingsDisplay component
     - Create src/components/StandingsDisplay.tsx
     - Accept props: standings (Record<string, TeamStanding[]>), loading (boolean), error (string | null)
     - Render loading spinner when loading is true
@@ -219,7 +220,7 @@
     - Handle empty state (no standings data)
     - _Requirements: 1.4, 3.1, 3.2_
   
-  - [ ] 9.6 Create App component
+  - [ ] 10.6 Create App component
     - Update src/App.tsx
     - Use useState for: date, groupBy, standings, loading, error
     - Implement handleSubmit function that calls fetchStandings
@@ -228,8 +229,8 @@
     - Initially show only DateSelector (standings is null)
     - _Requirements: 1.1, 1.4_
 
-- [ ] 10. Create deployment documentation
-  - [ ] 10.1 Write AWS deployment guide
+- [ ] 11. Create deployment documentation
+  - [ ] 11.1 Write AWS deployment guide
     - Create AWS_DEPLOYMENT.md in project root
     - Document AWS RDS PostgreSQL setup (instance type, security groups, connection string)
     - Document backend deployment to AWS ECS with Docker (task definition, service, load balancer)
@@ -239,7 +240,7 @@
     - Include security group rules and VPC networking
     - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5_
   
-  - [ ] 10.2 Update local development setup guide
+  - [x] 11.2 Update local development setup guide
     - Update README.md with local development instructions
     - Document prerequisites (Docker, Docker Compose)
     - Document how to start application: `docker-compose up`
@@ -248,20 +249,20 @@
     - Document environment variable configuration (.env.example)
     - _Requirements: 4.1_
 
-- [ ]* 11. Optional enhancements
-  - [ ]* 11.1 Add comprehensive unit tests
+- [ ]* 12. Optional enhancements
+  - [ ]* 12.1 Add comprehensive unit tests
     - Write unit tests for StandingsCalculator logic
     - Write unit tests for service layer methods
     - Write unit tests for repository query methods
     - _Requirements: All_
   
-  - [ ]* 11.2 Add integration tests
+  - [ ]* 12.2 Add integration tests
     - Write integration tests for REST endpoints with MockMvc
     - Write integration tests for database operations
     - Write integration tests for NBA API client with WireMock
     - _Requirements: All_
   
-  - [ ]* 11.3 Add frontend component tests
+  - [ ]* 12.3 Add frontend component tests
     - Write tests for DateSelector component
     - Write tests for StandingsDisplay component
     - Write tests for StandingsTable component
