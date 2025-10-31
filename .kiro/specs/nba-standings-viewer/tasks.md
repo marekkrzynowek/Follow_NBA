@@ -122,8 +122,8 @@
     - Use @Transactional for data modifications
     - _Requirements: 1.2, 1.3, 2.1, 2.2, 2.3, 2.4_
 
-- [ ] 8. Implement REST API layer
-  - [ ] 8.1 Create StandingsController
+- [x] 8. Implement REST API layer
+  - [x] 8.1 Create StandingsController
     - Implement GET /api/standings endpoint with @RequestParam date and groupBy (GroupBy enum type)
     - Use @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) for date parameter
     - Validate date parameter (must be within current season, throw InvalidDateException)
@@ -145,7 +145,7 @@
     - Place in com.nba.standings.exception package
     - _Requirements: 1.5, 2.4_
   
-  - [ ] 8.3 Configure CORS for frontend integration
+  - [x] 8.3 Configure CORS for frontend integration
     - Create com.nba.standings.config.CorsConfig class
     - Use @Configuration and implement WebMvcConfigurer
     - Override addCorsMappings to allow frontend origin (http://localhost:3000 for dev)
