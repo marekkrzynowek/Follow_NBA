@@ -250,7 +250,7 @@
     - _Requirements: 4.1_
 
 - [ ]* 12. Optional enhancements
-  - [ ]* 12.1 Add comprehensive unit tests
+  - [x] 12.1 Add comprehensive unit tests
     - Write unit tests for StandingsCalculator logic
     - Write unit tests for service layer methods
     - Write unit tests for repository query methods

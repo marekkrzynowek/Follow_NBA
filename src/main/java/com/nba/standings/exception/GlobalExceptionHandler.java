@@ -1,12 +1,16 @@
 package com.nba.standings.exception;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+
+import java.net.URI;
 
 /**
  * Global exception handler for the NBA Standings Viewer application.
@@ -29,7 +33,7 @@ public class GlobalExceptionHandler {
                 ex.getMessage()
         );
         problemDetail.setTitle("Bad Request");
-        problemDetail.setInstance(request.getDescription(false).replace("uri=", ""));
+        problemDetail.setInstance(getRequestUri(request));
         
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail);
     }
@@ -64,7 +68,7 @@ public class GlobalExceptionHandler {
                 detail
         );
         problemDetail.setTitle("Bad Request");
-        problemDetail.setInstance(request.getDescription(false).replace("uri=", ""));
+        problemDetail.setInstance(getRequestUri(request));
         
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail);
     }
@@ -83,7 +87,7 @@ public class GlobalExceptionHandler {
                 ex.getMessage()
         );
         problemDetail.setTitle("Internal Server Error");
-        problemDetail.setInstance(request.getDescription(false).replace("uri=", ""));
+        problemDetail.setInstance(getRequestUri(request));
         
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(problemDetail);
     }
@@ -102,7 +106,7 @@ public class GlobalExceptionHandler {
                 "An unexpected error occurred. Please try again later."
         );
         problemDetail.setTitle("Internal Server Error");
-        problemDetail.setInstance(request.getDescription(false).replace("uri=", ""));
+        problemDetail.setInstance(getRequestUri(request));
         
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(problemDetail);
     }
@@ -117,5 +121,18 @@ public class GlobalExceptionHandler {
             values[i] = enumConstants[i].toString();
         }
         return values;
+    }
+
+    /**
+     * Helper method to extract the full request URI including query string.
+     */
+    private URI getRequestUri(WebRequest request) {
+        HttpServletRequest servletRequest = ((ServletWebRequest) request).getRequest();
+        String fullUri = servletRequest.getRequestURL().toString();
+        String query = servletRequest.getQueryString();
+        if (query != null) {
+            fullUri += "?" + query;
+        }
+        return URI.create(fullUri);
     }
 }
