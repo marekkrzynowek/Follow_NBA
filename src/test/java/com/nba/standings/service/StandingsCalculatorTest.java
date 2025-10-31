@@ -78,6 +78,29 @@ class StandingsCalculatorTest {
     }
 
     @Test
+    void testCalculateStandings_AwayTeamWins() {
+        // Test case where away team wins (higher score than home team)
+        Game game = new Game(1L, LocalDate.now(), celtics, lakers, 105, 110);
+        List<Game> games = List.of(game);
+        List<Team> teams = List.of(celtics, lakers, warriors);
+        
+        Map<Long, TeamStanding> standings = calculator.calculateStandings(games, teams);
+        
+        TeamStanding celticsStanding = standings.get(1L);
+        TeamStanding lakersStanding = standings.get(2L);
+        
+        // Celtics (home) should have a loss
+        assertEquals(0, celticsStanding.getWins());
+        assertEquals(1, celticsStanding.getLosses());
+        assertEquals(0, BigDecimal.ZERO.compareTo(celticsStanding.getWinPct()));
+        
+        // Lakers (away) should have a win
+        assertEquals(1, lakersStanding.getWins());
+        assertEquals(0, lakersStanding.getLosses());
+        assertEquals(0, new BigDecimal("1.000").compareTo(lakersStanding.getWinPct()));
+    }
+
+    @Test
     void testCalculateStandings_WithMultipleGames() {
         List<Game> games = List.of(
             new Game(1L, LocalDate.now(), celtics, lakers, 110, 105),
