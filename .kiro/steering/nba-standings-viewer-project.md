@@ -220,6 +220,143 @@ src/
 - Include type, title, status, detail, and instance fields
 - Leverage Spring Boot 3.x built-in RFC 7807 support
 
+## Backend API Contract
+
+**CRITICAL: The backend is fully implemented and functional. Frontend MUST match these exact contracts.**
+
+### Standings Endpoint
+
+**URL:** `GET /api/standings`
+
+**Query Parameters:**
+- `date` (required): ISO date format (yyyy-MM-dd), e.g., "2024-12-15"
+- `groupBy` (required): Enum value - either "DIVISION" or "CONFERENCE"
+
+**Example Request:**
+```
+GET /api/standings?date=2024-12-15&groupBy=DIVISION
+```
+
+**Success Response (200 OK):**
+```json
+{
+  "date": "2024-12-15",
+  "groupBy": "DIVISION",
+  "standings": {
+    "ATLANTIC": [
+      {
+        "rank": 1,
+        "teamName": "Boston Celtics",
+        "wins": 25,
+        "losses": 5,
+        "winPct": 0.833
+      }
+    ],
+    "CENTRAL": [...],
+    "SOUTHEAST": [...],
+    "NORTHWEST": [...],
+    "PACIFIC": [...],
+    "SOUTHWEST": [...]
+  }
+}
+```
+
+**Error Response (RFC 7807 ProblemDetail):**
+```json
+{
+  "type": "about:blank",
+  "title": "Bad Request",
+  "status": 400,
+  "detail": "Date must be within the current NBA season (on or after 2024-10-01)",
+  "instance": "/api/standings?date=2024-09-15&groupBy=DIVISION"
+}
+```
+
+### TypeScript Type Definitions (Frontend)
+
+**IMPORTANT: Use these exact types to match the backend contract:**
+
+```typescript
+// Enums
+type GroupBy = 'DIVISION' | 'CONFERENCE';
+type Division = 'ATLANTIC' | 'CENTRAL' | 'SOUTHEAST' | 'NORTHWEST' | 'PACIFIC' | 'SOUTHWEST';
+type Conference = 'EASTERN' | 'WESTERN';
+
+// DTOs
+interface TeamStandingDTO {
+  rank: number;
+  teamName: string;
+  wins: number;
+  losses: number;
+  winPct: number; // BigDecimal from backend, comes as number in JSON
+}
+
+interface StandingsResponseDTO {
+  date: string; // ISO date string (yyyy-MM-dd)
+  groupBy: GroupBy;
+  standings: Record<string, TeamStandingDTO[]>; // Key is Division or Conference enum name
+}
+
+// Error response (RFC 7807)
+interface ProblemDetail {
+  type: string;
+  title: string;
+  status: number;
+  detail: string;
+  instance: string;
+}
+```
+
+### Season Date Validation Rules
+
+**CRITICAL: Frontend must validate dates before sending to backend:**
+- Date cannot be in the future (must be <= today)
+- Date must be within current NBA season (>= October 1st of current season year)
+- Season year logic: If current month is Jan-Sep, season started previous year's Oct 1st
+- Example: In March 2025, valid dates are from 2024-10-01 to today
+
+### CORS Configuration
+
+Backend allows requests from `http://localhost:3000` with credentials enabled.
+
+### Data Structure Notes
+
+1. **Standings Map Keys**: The `standings` object uses enum names as string keys:
+   - For DIVISION grouping: "ATLANTIC", "CENTRAL", "SOUTHEAST", "NORTHWEST", "PACIFIC", "SOUTHWEST"
+   - For CONFERENCE grouping: "EASTERN", "WESTERN"
+
+2. **Win Percentage**: Backend calculates as `wins / (wins + losses)` with 3 decimal precision
+
+3. **Ranking**: 
+   - When groupBy=DIVISION, rank is within division
+   - When groupBy=CONFERENCE, rank is within conference
+   - Teams are sorted by win percentage (descending)
+
+## Frontend Development Guidelines
+
+**API Service Layer:**
+- Create a dedicated API service file (e.g., `src/services/api.ts`)
+- Use `fetch` or `axios` for HTTP requests
+- Base URL should come from environment variable: `import.meta.env.VITE_API_BASE_URL`
+- Handle both success and error responses
+- Parse RFC 7807 error responses for user-friendly messages
+
+**Error Handling:**
+- Display user-friendly error messages from `ProblemDetail.detail`
+- Handle network errors gracefully
+- Show loading states during API calls
+
+**Date Handling:**
+- Use native JavaScript Date or a library like date-fns
+- Format dates as ISO strings (yyyy-MM-dd) for API calls
+- Validate dates on frontend before API calls to provide immediate feedback
+- Display dates in user-friendly format in UI
+
+**State Management:**
+- Use React hooks (useState, useEffect) for component state
+- Consider custom hooks for API calls (e.g., `useStandings`)
+- Handle loading, error, and success states
+
 ## Reference Files
 
 - Requirements: `.kiro/specs/nba-standings-viewer/requirements.md`
